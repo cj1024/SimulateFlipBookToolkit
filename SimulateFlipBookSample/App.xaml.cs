@@ -61,24 +61,48 @@ namespace SimulateFlipBookSample
         // 此代码在重新激活应用程序时不执行
         private void Application_Launching(object sender, LaunchingEventArgs e)
         {
+#if DEBUG
+            if (Debugger.IsAttached)
+            {
+                MemoryDiagnosticsUtil.Start();
+            }
+#endif
         }
 
         // 激活应用程序(置于前台)时执行的代码
         // 此代码在首次启动应用程序时不执行
         private void Application_Activated(object sender, ActivatedEventArgs e)
         {
+#if DEBUG
+            if (Debugger.IsAttached)
+            {
+                MemoryDiagnosticsUtil.Start();
+            }
+#endif
         }
 
         // 停用应用程序(发送到后台)时执行的代码
         // 此代码在应用程序关闭时不执行
         private void Application_Deactivated(object sender, DeactivatedEventArgs e)
         {
+#if DEBUG
+            if (Debugger.IsAttached)
+            {
+                MemoryDiagnosticsUtil.Stop();
+            }
+#endif
         }
 
         // 应用程序关闭(例如，用户点击“后退”)时执行的代码
         // 此代码在停用应用程序时不执行
         private void Application_Closing(object sender, ClosingEventArgs e)
         {
+#if DEBUG
+            if (Debugger.IsAttached)
+            {
+                MemoryDiagnosticsUtil.Stop();
+            }
+#endif
         }
 
         // 导航失败时执行的代码
