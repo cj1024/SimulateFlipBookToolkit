@@ -1,9 +1,6 @@
-﻿using System.Diagnostics;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using Microsoft.Phone.Controls;
 using SimulateFlipBookToolkit;
 
 namespace SimulateFlipBookSample
@@ -12,7 +9,7 @@ namespace SimulateFlipBookSample
     {
 
         private WriteableBitmapTransformer transformer;
-
+        private WriteableBitmap bitmap;
         // 构造函数
         public MainPage()
         {
@@ -27,7 +24,9 @@ namespace SimulateFlipBookSample
             var source = new WriteableBitmap(Source, null);
             source.Invalidate();
             transformer = new WriteableBitmapTransformer(source);
-            UpdateTarget(transformer.GenerateTransformedWriteableBitmap(1, 0, -LayoutRoot.ActualWidth));
+            bitmap = transformer.GenerateTransformedWriteableBitmap(1, 0, -LayoutRoot.ActualWidth);
+            Target.Source = bitmap;
+            Target.UpdateLayout();
         }
 
         // 用于生成本地化 ApplicationBar 的示例代码
@@ -79,7 +78,15 @@ namespace SimulateFlipBookSample
                 if (System.Math.Pow(p1.X - lastPoint.X, 2) + System.Math.Pow(p1.Y - lastPoint.Y, 2) > FrameReportTheshold)
                 {
                     var p2 = startPoint;
-                    UpdateTarget(p2.Y == p1.Y ? transformer.GenerateTransformedWriteableBitmap(1, 0, (p1.X - p2.X) / 2 - p1.X) : transformer.GenerateTransformedWriteableBitmap((p2.X - p1.X) / (p1.Y - p2.Y), -1, (p1.Y + p2.Y) / 2 + ((p2.X - p1.X) / (p2.Y - p1.Y) * (p1.X + p2.X) / 2)));
+                    if (p2.Y == p1.Y)
+                    {
+                        transformer.FillTransformedWriteableBitmap(1, 0, (p1.X - p2.X)/2 - p1.X, bitmap);
+                    }
+                    else
+                    {
+                        transformer.FillTransformedWriteableBitmap((p2.X - p1.X)/(p1.Y - p2.Y), -1, (p1.Y + p2.Y)/2 + ((p2.X - p1.X)/(p2.Y - p1.Y)*(p1.X + p2.X)/2), bitmap);
+                    }
+                    Target.UpdateLayout();
                     lastPoint = p1;
                 }
             }
@@ -89,13 +96,9 @@ namespace SimulateFlipBookSample
         {
             if (transformer != null)
             {
-                UpdateTarget(transformer.GenerateTransformedWriteableBitmap(1, 0, -Target.ActualWidth));
+                transformer.FillTransformedWriteableBitmap(1, 0, -Target.ActualWidth, bitmap);
+                Target.UpdateLayout();
             }
-        }
-
-        void UpdateTarget(ImageSource source)
-        {
-            Target.Source = source;
         }
 
     }

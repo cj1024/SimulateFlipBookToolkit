@@ -48,9 +48,9 @@ namespace SimulateFlipBookToolkit
             }
         }
 
-        private int[] GenerateTransformedPixels(double a, double b, double c)
+        private void GenerateTransformedPixels(double a, double b, double c, int []pixels)
         {
-            var pixels = new int[_pixels.Length];
+            System.Diagnostics.Debug.Assert(pixels.Length == _pixels.Length);
             _pixels.CopyTo(pixels, 0);
             var transparent = ColorExtention.GetColorInteger(Colors.Transparent);
             var transformer = new SimulateFlipBookWindowsPhoneRuntimeComponent.PointTransformer(a, b, c);
@@ -73,7 +73,6 @@ namespace SimulateFlipBookToolkit
                     }
                 }
             }
-            return pixels;
         }
 
         /// <summary>
@@ -81,15 +80,11 @@ namespace SimulateFlipBookToolkit
         /// 公式为
         /// a*x + b*y + c = 0
         /// </summary>
-        /// <param name="a">是否是垂直的</param>
-        /// <param name="b">斜率</param>
-        /// <param name="c">偏移</param>
-        /// <param name="bitmap">需要填充的图像</param>>
         public void FillTransformedWriteableBitmap(double a, double b, double c, WriteableBitmap bitmap)
         {
             System.Diagnostics.Debug.Assert(bitmap.Pixels.Length == _pixels.Length);
-            var pixels = GenerateTransformedPixels(a, b, c);
-            pixels.CopyTo(bitmap.Pixels, 0);
+            bitmap.Invalidate();
+            GenerateTransformedPixels(a, b, c, bitmap.Pixels);
         }
 
         /// <summary>
@@ -97,9 +92,6 @@ namespace SimulateFlipBookToolkit
         /// 公式为
         /// a*x + b*y + c = 0
         /// </summary>
-        /// <param name="a">是否是垂直的</param>
-        /// <param name="b">斜率</param>
-        /// <param name="c">偏移</param>
         /// <returns>创建好的图像</returns>
         public WriteableBitmap GenerateTransformedWriteableBitmap(double a, double b, double c)
         {
