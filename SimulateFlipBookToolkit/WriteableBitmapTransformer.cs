@@ -61,8 +61,8 @@ namespace SimulateFlipBookToolkit
                 {
                     double pointX = i;
                     double pointY = j;
-                    var check = a > 0 ? transformer.IsBelowAxis(pointX, pointY) : transformer.IsAboveAxis(pointX, pointY);
-                    if (check)
+                    var needReflect = a > 0 ? transformer.IsBelowAxis(pointX, pointY) : transformer.IsAboveAxis(pointX, pointY);
+                    if (needReflect)
                     {
                         var color = GetPixelAtPoint(i, j_, pixels);
                         var theta = transformer.CalculateTheta(pointX, pointY);
@@ -70,6 +70,10 @@ namespace SimulateFlipBookToolkit
                         var newPointY = transformer.TransformPointY(pointX, pointY, theta);
                         SetPixelAtPoint(i, j_, transparent, pixels);
                         SetPixelAtPoint((int)newPointX, _height - (int)newPointY, color, pixels);
+                        SetPixelAtPoint((int)newPointX - 1, _height - (int)newPointY, color, pixels);
+                        SetPixelAtPoint((int)newPointX + 1, _height - (int)newPointY, color, pixels);
+                        SetPixelAtPoint((int)newPointX, _height - (int)newPointY - 1, color, pixels);
+                        SetPixelAtPoint((int)newPointX, _height - (int)newPointY + 1, color, pixels);
                     }
                 }
             }
