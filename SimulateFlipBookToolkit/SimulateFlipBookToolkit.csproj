@@ -84,9 +84,14 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="ColorExtention.cs" />
-    <Compile Include="PointTransformer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WriteableBitmapTransformer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SimulateFlipBookWindowsPhoneRuntimeComponent\SimulateFlipBookWindowsPhoneRuntimeComponent.vcxproj">
+      <Project>{ea8ae642-9ce1-4b97-8307-04ed35727825}</Project>
+      <Name>SimulateFlipBookWindowsPhoneRuntimeComponent</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).$(TargetFrameworkVersion).Overrides.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).CSharp.targets" />

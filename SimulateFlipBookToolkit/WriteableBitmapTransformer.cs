@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
@@ -54,22 +53,23 @@ namespace SimulateFlipBookToolkit
             var pixels = new int[_pixels.Length];
             _pixels.CopyTo(pixels, 0);
             var transparent = ColorExtention.GetColorInteger(Colors.Transparent);
-            var transformer = new PointTransformer(a, b, c);
-            var point = new Point(0, 0);
+            var transformer = new SimulateFlipBookWindowsPhoneRuntimeComponent.PointTransformer(a, b, c);
             for (int j_ = 0; j_ < _height; j_++)
             {
                 var j = _height - j_;
                 for (int i = 0; i < _width; i++)
                 {
-                    point.X = i;
-                    point.Y = j;
-                    var check = a > 0 ? transformer.IsBelowAxis(point) : transformer.IsAboveAxis(point);
+                    double pointX = i;
+                    double pointY = j;
+                    var check = a > 0 ? transformer.IsBelowAxis(pointX, pointY) : transformer.IsAboveAxis(pointX, pointY);
                     if (check)
                     {
                         var color = GetPixelAtPoint(i, j_, pixels);
-                        var newPoint = transformer.TransformPoint(point);
+                        var theta = transformer.CalculateTheta(pointX, pointY);
+                        var newPointX = transformer.TransformPointX(pointX, pointY, theta);
+                        var newPointY = transformer.TransformPointY(pointX, pointY, theta);
                         SetPixelAtPoint(i, j_, transparent, pixels);
-                        SetPixelAtPoint((int)newPoint.X, _height - (int)newPoint.Y, color, pixels);
+                        SetPixelAtPoint((int)newPointX, _height - (int)newPointY, color, pixels);
                     }
                 }
             }
