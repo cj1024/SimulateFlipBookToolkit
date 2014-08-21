@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "PointTransformer.h"
+#include <math.h>
 
 using namespace SimulateFlipBookWindowsPhoneRuntimeComponent;
 using namespace Platform;
@@ -28,12 +29,7 @@ double PointTransformer::TransformPointY(double iX, double iY, double theta)
 	return iY - 2 * _b*theta;
 }
 
-bool PointTransformer::IsAboveAxis(double iX, double iY)
+double PointTransformer::DistanceToAxis(double iX, double iY)
 {
-	return _a*iX + _b*iY + _c < 0;
-}
-
-bool PointTransformer::IsBelowAxis(double iX, double iY)
-{
-	return _a*iX + _b*iY + _c > 0;
+	return (_a*iX + _b*iY + _c) / sqrt(_a*_a + _b*_b);
 }

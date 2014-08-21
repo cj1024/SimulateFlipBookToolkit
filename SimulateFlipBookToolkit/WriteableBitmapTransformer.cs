@@ -48,11 +48,14 @@ namespace SimulateFlipBookToolkit
             }
         }
 
+        static readonly int Transparent = ColorExtention.GetColorInteger(Colors.Transparent);
+        private const double MaskedShadowTheshold = 15;
+        private const double NonMaskedShadowTheshold = 10;
+
         private void GenerateTransformedPixels(double a, double b, double c, int []pixels)
         {
             System.Diagnostics.Debug.Assert(pixels.Length == _pixels.Length);
             _pixels.CopyTo(pixels, 0);
-            var transparent = ColorExtention.GetColorInteger(Colors.Transparent);
             var transformer = new SimulateFlipBookWindowsPhoneRuntimeComponent.PointTransformer(a, b, c);
             for (int j_ = 0; j_ < _height; j_++)
             {
@@ -61,14 +64,46 @@ namespace SimulateFlipBookToolkit
                 {
                     double pointX = i;
                     double pointY = j;
-                    var needReflect = a > 0 ? transformer.IsBelowAxis(pointX, pointY) : transformer.IsAboveAxis(pointX, pointY);
-                    if (needReflect)
+                    var distance = transformer.DistanceToAxis(pointX, pointY);
+                    var needReflect = a > 0 ? distance > 0 : distance < 0;
+                    var needShadow = b != 0 && !needReflect && (Math.Abs(distance) < MaskedShadowTheshold);
+                    if (needShadow)
+                    {
+                        var theta = transformer.CalculateTheta(pointX, pointY);
+                        var newPointX = transformer.TransformPointX(pointX, pointY, theta);
+                        var newPointY = _height - transformer.TransformPointY(pointX, pointY, theta);
+                        if (newPointX >= 0 && newPointX < _width && newPointY >= 0 && newPointY < _height)
+                        {
+                            
+                        }
+                        else
+                        {
+                            var color = GetPixelAtPoint(i, j_, pixels);
+                            var colorBytes = ColorExtention.GetColorByte(color);
+                            for (int k = 0; k < colorBytes.Length; k++)
+                            {
+                                colorBytes[k] = (byte)(colorBytes[k] * ((Math.Abs(distance) / MaskedShadowTheshold) * 0.8 + 0.2));
+                            }
+                            color = ColorExtention.GetColorInteger(colorBytes);
+                            SetPixelAtPoint(i, j_, color, pixels);
+                        }
+                    }
+                    else if (needReflect)
                     {
                         var color = GetPixelAtPoint(i, j_, pixels);
+                        if (b != 0 && (Math.Abs(distance) < NonMaskedShadowTheshold))
+                        {
+                            var colorBytes = ColorExtention.GetColorByte(color);
+                            for (int k = 0; k < colorBytes.Length; k++)
+                            {
+                                colorBytes[k] = (byte)(colorBytes[k] * ((Math.Abs(distance) / NonMaskedShadowTheshold) * 0.3 + 0.7));
+                            }
+                            color = ColorExtention.GetColorInteger(colorBytes);
+                        }
                         var theta = transformer.CalculateTheta(pointX, pointY);
                         var newPointX = transformer.TransformPointX(pointX, pointY, theta);
                         var newPointY = transformer.TransformPointY(pointX, pointY, theta);
-                        SetPixelAtPoint(i, j_, transparent, pixels);
+                        SetPixelAtPoint(i, j_, Transparent, pixels);
                         SetPixelAtPoint((int)newPointX, _height - (int)newPointY, color, pixels);
                         SetPixelAtPoint((int)newPointX - 1, _height - (int)newPointY, color, pixels);
                         SetPixelAtPoint((int)newPointX + 1, _height - (int)newPointY, color, pixels);
