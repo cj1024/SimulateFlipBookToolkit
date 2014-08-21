@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Diagnostics;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -47,6 +48,10 @@ namespace SimulateFlipBookSample
 
         private Point startPoint;
 
+        private Point lastPoint;
+
+        private const double FrameReportTheshold = 15*15;
+
         private void Target_OnMouseEnter(object sender, MouseEventArgs e)
         {
             startPoint = e.GetPosition(Target);
@@ -71,8 +76,12 @@ namespace SimulateFlipBookSample
             {
                 var p1 = e.GetPosition(Target);
                 p1 = new Point(p1.X, Target.ActualHeight - p1.Y);
-                var p2 = startPoint;
-                UpdateTarget(p2.Y == p1.Y ? transformer.GenerateTransformedWriteableBitmap(1, 0, (p1.X - p2.X) / 2 - p1.X) : transformer.GenerateTransformedWriteableBitmap((p2.X - p1.X) / (p1.Y - p2.Y), -1, (p1.Y + p2.Y) / 2 + ((p2.X - p1.X) / (p2.Y - p1.Y) * (p1.X + p2.X) / 2)));
+                if (System.Math.Pow(p1.X - lastPoint.X, 2) + System.Math.Pow(p1.Y - lastPoint.Y, 2) > FrameReportTheshold)
+                {
+                    var p2 = startPoint;
+                    UpdateTarget(p2.Y == p1.Y ? transformer.GenerateTransformedWriteableBitmap(1, 0, (p1.X - p2.X) / 2 - p1.X) : transformer.GenerateTransformedWriteableBitmap((p2.X - p1.X) / (p1.Y - p2.Y), -1, (p1.Y + p2.Y) / 2 + ((p2.X - p1.X) / (p2.Y - p1.Y) * (p1.X + p2.X) / 2)));
+                    lastPoint = p1;
+                }
             }
         }
 
